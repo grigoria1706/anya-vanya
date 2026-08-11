@@ -179,8 +179,18 @@ const form = document.getElementById("rsvp-form");
 const status = document.getElementById("form-status");
 
 if (form) {
+  const submitBtn = form.querySelector('button[type="submit"]');
+
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
+
+    // Сразу блокируем кнопку и показываем статус — без этого казалось,
+    // что клик не сработал, и приходилось нажимать ещё раз (а форма
+    // при этом могла отправляться повторно).
+    if (submitBtn) submitBtn.disabled = true;
+    status.hidden = false;
+    status.textContent = "Отправляем...";
+
     const data = new FormData(form);
 
     try {
@@ -191,11 +201,11 @@ if (form) {
       });
 
       form.reset();
-      status.hidden = false;
       status.textContent = "Спасибо! Мы получили ваш ответ!";
     } catch (err) {
-      status.hidden = false;
       status.textContent = "Не удалось отправить. Проверьте интернет-соединение и попробуйте снова.";
+    } finally {
+      if (submitBtn) submitBtn.disabled = false;
     }
   });
 }
